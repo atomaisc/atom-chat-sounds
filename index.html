@@ -108,29 +108,7 @@
   .dock-text b { font-weight: 700; }
   .dock .btn-primary { margin-left: auto; background: var(--blue); border-color: var(--blue); color: #fff; }
   .dock .btn-primary:disabled { opacity: 0.4; cursor: default; }
-  /* A stand-in for the macOS banner, so each sound plays in context. */
-  .banner {
-    position: fixed; top: 1rem; right: 1rem; width: 22rem; max-width: calc(100vw - 2rem);
-    display: flex; gap: 0.75rem; align-items: center;
-    padding: 0.75rem 0.875rem;
-    border-radius: 16px;
-    background: rgba(246,246,246,0.86);
-    backdrop-filter: blur(24px) saturate(1.6);
-    border: 1px solid rgba(0,0,0,0.08);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.16);
-    font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
-    transform: translateX(calc(100% + 2rem));
-    transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
-    z-index: 10;
-  }
-  .banner.show { transform: none; }
-  .banner .app { width: 34px; height: 34px; border-radius: 8px; background: linear-gradient(145deg, #e8e8e8, #cfcfcf); flex-shrink: 0; }
-  .banner .text { flex: 1; min-width: 0; font-size: 13px; line-height: 1.3; }
-  .banner .title { font-weight: 600; color: #1d1d1f; }
-  .banner .sub { color: #6e6e73; }
-  .banner .body { color: #1d1d1f; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .banner .thumb { width: 38px; height: 38px; border-radius: 8px; flex-shrink: 0; }
-  @media (prefers-reduced-motion: reduce) { .banner { transition: none; } .card { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .card { transition: none; } }
   @media (max-width: 40rem) { h1 { font-size: 1.625rem; } header { padding-top: 2.25rem; } }
 </style>
 </head>
@@ -139,7 +117,7 @@
   <div class="intro">
     <img src="atom-icon.png" alt="Atom">
     <h1>Pick the sound for Atom chat</h1>
-    <p>This plays when someone sends you a direct message or mentions you. Press play to hear each one the way people will get it, with the Chrome notification it comes with. Pick your favorite, then copy your pick and send it to Spencer.</p>
+    <p>This plays when someone sends you a direct message or mentions you. Press play to hear each one. Pick your favorite, then copy your pick and send it to Spencer.</p>
   </div>
   <div class="toolbar">
     <button class="btn" id="play-all">Play all in order</button>
@@ -152,25 +130,15 @@
     <button class="btn btn-primary" id="copy" disabled>Copy my pick</button>
   </div>
 </div>
-<div class="banner" id="banner" aria-hidden="true">
-  <div class="app"></div>
-  <div class="text">
-    <div class="title">Matt Whitcomb</div>
-    <div class="sub">atom-ai.com</div>
-    <div class="body">Crew flagged debris on the SR-12 culvert inlet.</div>
-  </div>
-  <img class="thumb" src="atom-icon.png" alt="">
-</div>
 <script>
 const SOUNDS = [{"id": 1, "file": "sounds/01-marimba-rise.mp3", "name": "Marimba rise", "description": "Two warm marimba notes, a fifth apart, going up.", "seconds": 0.9}, {"id": 2, "file": "sounds/02-marimba-fall.mp3", "name": "Marimba fall", "description": "The same marimba pair, going down. Calmer.", "seconds": 0.9}, {"id": 3, "file": "sounds/03-marimba-single.mp3", "name": "Marimba tap", "description": "One round marimba note. Minimal.", "seconds": 0.7}, {"id": 4, "file": "sounds/04-marimba-triad.mp3", "name": "Marimba triad", "description": "Three quick notes of a major chord.", "seconds": 1.0}, {"id": 5, "file": "sounds/05-xylophone-hop.mp3", "name": "Xylophone hop", "description": "Bright wooden two-step, a fourth apart.", "seconds": 0.8}, {"id": 6, "file": "sounds/06-glass-tap.mp3", "name": "Glass tap", "description": "A single clear glass ting.", "seconds": 1.1}, {"id": 7, "file": "sounds/07-glass-double.mp3", "name": "Glass double", "description": "Two glass tings, the second one softer.", "seconds": 1.2}, {"id": 8, "file": "sounds/08-bell-soft.mp3", "name": "Soft bell", "description": "A small bell with a gentle ring-out.", "seconds": 1.6}, {"id": 9, "file": "sounds/09-bell-doorbell.mp3", "name": "Ding-dong", "description": "Classic two-bell doorbell, high then low.", "seconds": 1.9}, {"id": 10, "file": "sounds/10-bell-chord.mp3", "name": "Bell chord", "description": "Two bells struck together, a major third.", "seconds": 1.8}, {"id": 11, "file": "sounds/11-kalimba-pair.mp3", "name": "Kalimba pair", "description": "Two thumb-piano notes. Playful, organic.", "seconds": 1.0}, {"id": 12, "file": "sounds/12-kalimba-trio.mp3", "name": "Kalimba trio", "description": "Three kalimba notes walking up.", "seconds": 1.1}, {"id": 13, "file": "sounds/13-glock-sparkle.mp3", "name": "Glockenspiel sparkle", "description": "Three high glockenspiel notes, quick.", "seconds": 1.2}, {"id": 14, "file": "sounds/14-pluck-up.mp3", "name": "Pluck up", "description": "Two soft plucked-string notes rising.", "seconds": 0.9}, {"id": 15, "file": "sounds/15-pluck-single.mp3", "name": "Pluck", "description": "One muted pluck. Very short.", "seconds": 0.5}, {"id": 16, "file": "sounds/16-sine-fourth.mp3", "name": "Clean fourth", "description": "Two pure tones, a fourth apart. Modern, neutral.", "seconds": 0.9}, {"id": 17, "file": "sounds/17-wood-knock.mp3", "name": "Wood knock", "description": "Two short wood-block knocks.", "seconds": 0.5}, {"id": 18, "file": "sounds/18-bubble.mp3", "name": "Bubble", "description": "A soft rising bubble pop.", "seconds": 0.35}, {"id": 19, "file": "sounds/19-arpeggio-maj7.mp3", "name": "Arpeggio", "description": "Four-note major seventh roll, marimba.", "seconds": 1.1}, {"id": 20, "file": "sounds/20-atom-motif.mp3", "name": "Atom motif", "description": "Three notes, one per logo shape: low, high, middle.", "seconds": 1.0}];
 const PLAY = '<svg viewBox="0 0 24 24"><path d="M7 4.5v15l13-7.5z"/></svg>';
 const STOP = '<svg viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg>';
 const grid = document.getElementById('grid');
-const banner = document.getElementById('banner');
 const dockText = document.getElementById('dock-text');
 const copyButton = document.getElementById('copy');
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-const state = { picked: null, current: null, bannerTimer: null, playingAll: false };
+const state = { picked: null, current: null, playingAll: false };
 
 const pad = n => String(n).padStart(2, '0');
 
@@ -207,12 +175,6 @@ const peaksFor = async url => {
   return peaks.map(p => Math.sqrt(p / top));
 };
 
-const showBanner = () => {
-  clearTimeout(state.bannerTimer);
-  banner.classList.add('show');
-  state.bannerTimer = setTimeout(() => banner.classList.remove('show'), 2800);
-};
-
 const stopCurrent = () => {
   if (!state.current) return;
   const { audio, card, button, frame } = state.current;
@@ -243,7 +205,6 @@ const play = card => new Promise(resolve => {
     current.frame = requestAnimationFrame(tick);
   };
   audio.addEventListener('ended', () => { if (state.current === current) stopCurrent(); resolve(); });
-  showBanner();
   audio.play().then(tick).catch(() => { stopCurrent(); resolve(); });
 });
 
