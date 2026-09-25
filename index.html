@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pick the Atom chat sound</title>
+<link rel="icon" href="atom-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #333333;
+    --muted: #7a7a7a;
+    --line: #e2e2e2;
+    --wash: #f5f5f5;
+    --blue: #0178e5;
+    --blue-wash: #eef6fe;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    color: var(--ink);
+    background: #fff;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: 6rem;
+  }
+  header {
+    max-width: 68rem;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem 2rem;
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  .intro { max-width: 36rem; }
+  .intro img { width: 44px; height: 44px; border-radius: 10px; border: 1px solid var(--line); display: block; margin-bottom: 1.25rem; }
+  h1 { font-size: 2rem; line-height: 1.2; font-weight: 700; letter-spacing: -0.02em; margin: 0 0 0.75rem; }
+  .intro p { margin: 0; font-size: 1rem; line-height: 1.55; color: var(--muted); }
+  .toolbar { display: flex; gap: 0.5rem; }
+  button { font: inherit; cursor: pointer; }
+  .btn {
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--ink);
+    border-radius: 999px;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  .btn:hover { border-color: #c8c8c8; }
+  .btn:focus-visible, .card:focus-visible, .pick:focus-visible, .play:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+  main {
+    max-width: 68rem;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: 1rem;
+  }
+  .card {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1rem 1rem 0.875rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    background: #fff;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .card.playing { border-color: #9cc9f5; }
+  .card.picked { border-color: var(--blue); background: var(--blue-wash); box-shadow: inset 0 0 0 1px var(--blue); }
+  .top { display: flex; align-items: baseline; gap: 0.625rem; }
+  .num { font-size: 0.875rem; color: var(--muted); font-variant-numeric: tabular-nums; width: 1.5rem; }
+  .name { font-size: 1.0625rem; font-weight: 700; letter-spacing: -0.01em; }
+  .desc { font-size: 0.875rem; line-height: 1.45; color: var(--muted); margin: -0.25rem 0 0 2.125rem; min-height: 2.9em; }
+  canvas { width: 100%; height: 44px; display: block; }
+  .row { display: flex; gap: 0.5rem; align-items: center; }
+  .play {
+    width: 2.25rem; height: 2.25rem; border-radius: 50%;
+    border: none; background: var(--blue); color: #fff;
+    display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .play svg { width: 14px; height: 14px; fill: currentColor; }
+  .pick {
+    margin-left: auto;
+    border: 1px solid var(--line);
+    background: #fff;
+    border-radius: 999px;
+    padding: 0.375rem 0.875rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .card.picked .pick { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .dock {
+    position: fixed; left: 0; right: 0; bottom: 0;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid var(--line);
+    padding: 0.875rem 1.5rem;
+  }
+  .dock-inner { max-width: 68rem; margin: 0 auto; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+  .dock-text { font-size: 0.9375rem; }
+  .dock-text b { font-weight: 700; }
+  .dock .btn-primary { margin-left: auto; background: var(--blue); border-color: var(--blue); color: #fff; }
+  .dock .btn-primary:disabled { opacity: 0.4; cursor: default; }
+  /* A stand-in for the macOS banner, so each sound plays in context. */
+  .banner {
+    position: fixed; top: 1rem; right: 1rem; width: 22rem; max-width: calc(100vw - 2rem);
+    display: flex; gap: 0.75rem; align-items: center;
+    padding: 0.75rem 0.875rem;
+    border-radius: 16px;
+    background: rgba(246,246,246,0.86);
+    backdrop-filter: blur(24px) saturate(1.6);
+    border: 1px solid rgba(0,0,0,0.08);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.16);
+    font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+    transform: translateX(calc(100% + 2rem));
+    transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+    z-index: 10;
+  }
+  .banner.show { transform: none; }
+  .banner .app { width: 34px; height: 34px; border-radius: 8px; background: linear-gradient(145deg, #e8e8e8, #cfcfcf); flex-shrink: 0; }
+  .banner .text { flex: 1; min-width: 0; font-size: 13px; line-height: 1.3; }
+  .banner .title { font-weight: 600; color: #1d1d1f; }
+  .banner .sub { color: #6e6e73; }
+  .banner .body { color: #1d1d1f; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .banner .thumb { width: 38px; height: 38px; border-radius: 8px; flex-shrink: 0; }
+  @media (prefers-reduced-motion: reduce) { .banner { transition: none; } .card { transition: none; } }
+  @media (max-width: 40rem) { h1 { font-size: 1.625rem; } header { padding-top: 2.25rem; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="intro">
+    <img src="atom-icon.png" alt="Atom">
+    <h1>Pick the sound for Atom chat</h1>
+    <p>This plays when someone sends you a direct message or mentions you. Press play to hear each one the way people will get it, with the Chrome notification it comes with. Pick your favorite, then copy your pick and send it to Spencer.</p>
+  </div>
+  <div class="toolbar">
+    <button class="btn" id="play-all">Play all in order</button>
+  </div>
+</header>
+<main id="grid"></main>
+<div class="dock">
+  <div class="dock-inner">
+    <span class="dock-text" id="dock-text">No pick yet.</span>
+    <button class="btn btn-primary" id="copy" disabled>Copy my pick</button>
+  </div>
+</div>
+<div class="banner" id="banner" aria-hidden="true">
+  <div class="app"></div>
+  <div class="text">
+    <div class="title">Matt Whitcomb</div>
+    <div class="sub">atom-ai.com</div>
+    <div class="body">Crew flagged debris on the SR-12 culvert inlet.</div>
+  </div>
+  <img class="thumb" src="atom-icon.png" alt="">
+</div>
+<script>
+const SOUNDS = [{"id": 1, "file": "sounds/01-marimba-rise.mp3", "name": "Marimba rise", "description": "Two warm marimba notes, a fifth apart, going up.", "seconds": 0.9}, {"id": 2, "file": "sounds/02-marimba-fall.mp3", "name": "Marimba fall", "description": "The same marimba pair, going down. Calmer.", "seconds": 0.9}, {"id": 3, "file": "sounds/03-marimba-single.mp3", "name": "Marimba tap", "description": "One round marimba note. Minimal.", "seconds": 0.7}, {"id": 4, "file": "sounds/04-marimba-triad.mp3", "name": "Marimba triad", "description": "Three quick notes of a major chord.", "seconds": 1.0}, {"id": 5, "file": "sounds/05-xylophone-hop.mp3", "name": "Xylophone hop", "description": "Bright wooden two-step, a fourth apart.", "seconds": 0.8}, {"id": 6, "file": "sounds/06-glass-tap.mp3", "name": "Glass tap", "description": "A single clear glass ting.", "seconds": 1.1}, {"id": 7, "file": "sounds/07-glass-double.mp3", "name": "Glass double", "description": "Two glass tings, the second one softer.", "seconds": 1.2}, {"id": 8, "file": "sounds/08-bell-soft.mp3", "name": "Soft bell", "description": "A small bell with a gentle ring-out.", "seconds": 1.6}, {"id": 9, "file": "sounds/09-bell-doorbell.mp3", "name": "Ding-dong", "description": "Classic two-bell doorbell, high then low.", "seconds": 1.9}, {"id": 10, "file": "sounds/10-bell-chord.mp3", "name": "Bell chord", "description": "Two bells struck together, a major third.", "seconds": 1.8}, {"id": 11, "file": "sounds/11-kalimba-pair.mp3", "name": "Kalimba pair", "description": "Two thumb-piano notes. Playful, organic.", "seconds": 1.0}, {"id": 12, "file": "sounds/12-kalimba-trio.mp3", "name": "Kalimba trio", "description": "Three kalimba notes walking up.", "seconds": 1.1}, {"id": 13, "file": "sounds/13-glock-sparkle.mp3", "name": "Glockenspiel sparkle", "description": "Three high glockenspiel notes, quick.", "seconds": 1.2}, {"id": 14, "file": "sounds/14-pluck-up.mp3", "name": "Pluck up", "description": "Two soft plucked-string notes rising.", "seconds": 0.9}, {"id": 15, "file": "sounds/15-pluck-single.mp3", "name": "Pluck", "description": "One muted pluck. Very short.", "seconds": 0.5}, {"id": 16, "file": "sounds/16-sine-fourth.mp3", "name": "Clean fourth", "description": "Two pure tones, a fourth apart. Modern, neutral.", "seconds": 0.9}, {"id": 17, "file": "sounds/17-wood-knock.mp3", "name": "Wood knock", "description": "Two short wood-block knocks.", "seconds": 0.5}, {"id": 18, "file": "sounds/18-bubble.mp3", "name": "Bubble", "description": "A soft rising bubble pop.", "seconds": 0.35}, {"id": 19, "file": "sounds/19-arpeggio-maj7.mp3", "name": "Arpeggio", "description": "Four-note major seventh roll, marimba.", "seconds": 1.1}, {"id": 20, "file": "sounds/20-atom-motif.mp3", "name": "Atom motif", "description": "Three notes, one per logo shape: low, high, middle.", "seconds": 1.0}];
+const PLAY = '<svg viewBox="0 0 24 24"><path d="M7 4.5v15l13-7.5z"/></svg>';
+const STOP = '<svg viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg>';
+const grid = document.getElementById('grid');
+const banner = document.getElementById('banner');
+const dockText = document.getElementById('dock-text');
+const copyButton = document.getElementById('copy');
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+const state = { picked: null, current: null, bannerTimer: null, playingAll: false };
+
+const pad = n => String(n).padStart(2, '0');
+
+const drawWave = (canvas, peaks, progress) => {
+  const ratio = window.devicePixelRatio || 1;
+  const width = canvas.clientWidth * ratio;
+  const height = canvas.clientHeight * ratio;
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  const bar = 2 * ratio;
+  const gap = 2 * ratio;
+  const count = Math.floor(width / (bar + gap));
+  for (let i = 0; i < count; i += 1) {
+    const peak = peaks[Math.floor((i / count) * peaks.length)] || 0;
+    const h = Math.max(ratio, peak * height);
+    ctx.fillStyle = i / count <= progress ? '#0178e5' : '#cfd6dd';
+    ctx.fillRect(i * (bar + gap), (height - h) / 2, bar, h);
+  }
+};
+
+const peaksFor = async url => {
+  const data = await fetch(url).then(r => r.arrayBuffer());
+  const buffer = await audioContext.decodeAudioData(data);
+  const channel = buffer.getChannelData(0);
+  const buckets = 120;
+  const size = Math.floor(channel.length / buckets);
+  const peaks = Array.from({ length: buckets }, (_, b) => {
+    let max = 0;
+    for (let i = b * size; i < (b + 1) * size; i += 1) max = Math.max(max, Math.abs(channel[i]));
+    return max;
+  });
+  const top = Math.max(...peaks) || 1;
+  return peaks.map(p => Math.sqrt(p / top));
+};
+
+const showBanner = () => {
+  clearTimeout(state.bannerTimer);
+  banner.classList.add('show');
+  state.bannerTimer = setTimeout(() => banner.classList.remove('show'), 2800);
+};
+
+const stopCurrent = () => {
+  if (!state.current) return;
+  const { audio, card, button, frame } = state.current;
+  audio.pause();
+  audio.currentTime = 0;
+  cancelAnimationFrame(frame);
+  card.classList.remove('playing');
+  button.innerHTML = PLAY;
+  button.setAttribute('aria-label', `Play ${card.dataset.name}`);
+  drawWave(card.querySelector('canvas'), card.peaks || [], 0);
+  state.current = null;
+};
+
+const play = card => new Promise(resolve => {
+  const wasPlaying = state.current && state.current.card === card;
+  stopCurrent();
+  if (wasPlaying) return resolve();
+  const audio = new Audio(card.dataset.file);
+  const button = card.querySelector('.play');
+  const canvas = card.querySelector('canvas');
+  const current = { audio, card, button, frame: 0 };
+  state.current = current;
+  card.classList.add('playing');
+  button.innerHTML = STOP;
+  button.setAttribute('aria-label', `Stop ${card.dataset.name}`);
+  const tick = () => {
+    drawWave(canvas, card.peaks || [], audio.duration ? audio.currentTime / audio.duration : 0);
+    current.frame = requestAnimationFrame(tick);
+  };
+  audio.addEventListener('ended', () => { if (state.current === current) stopCurrent(); resolve(); });
+  showBanner();
+  audio.play().then(tick).catch(() => { stopCurrent(); resolve(); });
+});
+
+const updateDock = () => {
+  const sound = SOUNDS.find(s => s.id === state.picked);
+  if (!sound) {
+    dockText.textContent = 'No pick yet.';
+    copyButton.disabled = true;
+    return;
+  }
+  dockText.innerHTML = `Your pick: <b>${pad(sound.id)} ${sound.name}</b>`;
+  copyButton.disabled = false;
+};
+
+const pick = card => {
+  const id = Number(card.dataset.id);
+  state.picked = state.picked === id ? null : id;
+  document.querySelectorAll('.card').forEach(c => {
+    const on = Number(c.dataset.id) === state.picked;
+    c.classList.toggle('picked', on);
+    c.querySelector('.pick').textContent = on ? 'Picked' : 'Pick this';
+    c.querySelector('.pick').setAttribute('aria-pressed', String(on));
+  });
+  updateDock();
+};
+
+SOUNDS.forEach(sound => {
+  const card = document.createElement('article');
+  card.className = 'card';
+  card.dataset.id = sound.id;
+  card.dataset.file = sound.file;
+  card.dataset.name = sound.name;
+  card.innerHTML = `
+    <div class="top"><span class="num">${pad(sound.id)}</span><span class="name">${sound.name}</span></div>
+    <div class="desc">${sound.description}</div>
+    <canvas aria-hidden="true"></canvas>
+    <div class="row">
+      <button class="play" aria-label="Play ${sound.name}">${PLAY}</button>
+      <button class="pick" aria-pressed="false">Pick this</button>
+    </div>`;
+  card.querySelector('.play').addEventListener('click', () => { state.playingAll = false; play(card); });
+  card.querySelector('.pick').addEventListener('click', () => pick(card));
+  grid.appendChild(card);
+  peaksFor(sound.file).then(peaks => { card.peaks = peaks; drawWave(card.querySelector('canvas'), peaks, 0); }).catch(() => {});
+});
+
+document.getElementById('play-all').addEventListener('click', async event => {
+  const button = event.currentTarget;
+  if (state.playingAll) { state.playingAll = false; stopCurrent(); button.textContent = 'Play all in order'; return; }
+  state.playingAll = true;
+  button.textContent = 'Stop';
+  for (const card of document.querySelectorAll('.card')) {
+    if (!state.playingAll) break;
+    card.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    await play(card);
+    await new Promise(r => setTimeout(r, 900));
+  }
+  state.playingAll = false;
+  button.textContent = 'Play all in order';
+});
+
+copyButton.addEventListener('click', async () => {
+  const sound = SOUNDS.find(s => s.id === state.picked);
+  if (!sound) return;
+  const text = `My pick for the Atom chat sound: ${pad(sound.id)} ${sound.name}`;
+  await navigator.clipboard.writeText(text).catch(() => {});
+  copyButton.textContent = 'Copied';
+  setTimeout(() => { copyButton.textContent = 'Copy my pick'; }, 1600);
+});
+
+window.addEventListener('resize', () => document.querySelectorAll('.card').forEach(c => drawWave(c.querySelector('canvas'), c.peaks || [], 0)));
+</script>
+</body>
+</html>

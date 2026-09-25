@@ -1,0 +1,142 @@
+[
+  {
+    "id": 1,
+    "file": "sounds/01-marimba-rise.mp3",
+    "name": "Marimba rise",
+    "description": "Two warm marimba notes, a fifth apart, going up.",
+    "seconds": 0.9
+  },
+  {
+    "id": 2,
+    "file": "sounds/02-marimba-fall.mp3",
+    "name": "Marimba fall",
+    "description": "The same marimba pair, going down. Calmer.",
+    "seconds": 0.9
+  },
+  {
+    "id": 3,
+    "file": "sounds/03-marimba-single.mp3",
+    "name": "Marimba tap",
+    "description": "One round marimba note. Minimal.",
+    "seconds": 0.7
+  },
+  {
+    "id": 4,
+    "file": "sounds/04-marimba-triad.mp3",
+    "name": "Marimba triad",
+    "description": "Three quick notes of a major chord.",
+    "seconds": 1.0
+  },
+  {
+    "id": 5,
+    "file": "sounds/05-xylophone-hop.mp3",
+    "name": "Xylophone hop",
+    "description": "Bright wooden two-step, a fourth apart.",
+    "seconds": 0.8
+  },
+  {
+    "id": 6,
+    "file": "sounds/06-glass-tap.mp3",
+    "name": "Glass tap",
+    "description": "A single clear glass ting.",
+    "seconds": 1.1
+  },
+  {
+    "id": 7,
+    "file": "sounds/07-glass-double.mp3",
+    "name": "Glass double",
+    "description": "Two glass tings, the second one softer.",
+    "seconds": 1.2
+  },
+  {
+    "id": 8,
+    "file": "sounds/08-bell-soft.mp3",
+    "name": "Soft bell",
+    "description": "A small bell with a gentle ring-out.",
+    "seconds": 1.6
+  },
+  {
+    "id": 9,
+    "file": "sounds/09-bell-doorbell.mp3",
+    "name": "Ding-dong",
+    "description": "Classic two-bell doorbell, high then low.",
+    "seconds": 1.9
+  },
+  {
+    "id": 10,
+    "file": "sounds/10-bell-chord.mp3",
+    "name": "Bell chord",
+    "description": "Two bells struck together, a major third.",
+    "seconds": 1.8
+  },
+  {
+    "id": 11,
+    "file": "sounds/11-kalimba-pair.mp3",
+    "name": "Kalimba pair",
+    "description": "Two thumb-piano notes. Playful, organic.",
+    "seconds": 1.0
+  },
+  {
+    "id": 12,
+    "file": "sounds/12-kalimba-trio.mp3",
+    "name": "Kalimba trio",
+    "description": "Three kalimba notes walking up.",
+    "seconds": 1.1
+  },
+  {
+    "id": 13,
+    "file": "sounds/13-glock-sparkle.mp3",
+    "name": "Glockenspiel sparkle",
+    "description": "Three high glockenspiel notes, quick.",
+    "seconds": 1.2
+  },
+  {
+    "id": 14,
+    "file": "sounds/14-pluck-up.mp3",
+    "name": "Pluck up",
+    "description": "Two soft plucked-string notes rising.",
+    "seconds": 0.9
+  },
+  {
+    "id": 15,
+    "file": "sounds/15-pluck-single.mp3",
+    "name": "Pluck",
+    "description": "One muted pluck. Very short.",
+    "seconds": 0.5
+  },
+  {
+    "id": 16,
+    "file": "sounds/16-sine-fourth.mp3",
+    "name": "Clean fourth",
+    "description": "Two pure tones, a fourth apart. Modern, neutral.",
+    "seconds": 0.9
+  },
+  {
+    "id": 17,
+    "file": "sounds/17-wood-knock.mp3",
+    "name": "Wood knock",
+    "description": "Two short wood-block knocks.",
+    "seconds": 0.5
+  },
+  {
+    "id": 18,
+    "file": "sounds/18-bubble.mp3",
+    "name": "Bubble",
+    "description": "A soft rising bubble pop.",
+    "seconds": 0.35
+  },
+  {
+    "id": 19,
+    "file": "sounds/19-arpeggio-maj7.mp3",
+    "name": "Arpeggio",
+    "description": "Four-note major seventh roll, marimba.",
+    "seconds": 1.1
+  },
+  {
+    "id": 20,
+    "file": "sounds/20-atom-motif.mp3",
+    "name": "Atom motif",
+    "description": "Three notes, one per logo shape: low, high, middle.",
+    "seconds": 1.0
+  }
+]
